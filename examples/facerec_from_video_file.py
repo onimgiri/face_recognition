@@ -8,23 +8,23 @@ import cv2
 # specific demo. If you have trouble installing it, try any of the other demos that don't require it instead.
 
 # Open the input movie file
-input_movie = cv2.VideoCapture("hamilton_clip.mp4")
+input_movie = cv2.VideoCapture("PXL_20230514_180104813.TS.mp4")
 length = int(input_movie.get(cv2.CAP_PROP_FRAME_COUNT))
 
 # Create an output movie file (make sure resolution/frame rate matches input video!)
-fourcc = cv2.VideoWriter_fourcc(*'XVID')
-output_movie = cv2.VideoWriter('output.avi', fourcc, 29.97, (640, 360))
+fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+output_movie = cv2.VideoWriter('output.mp4', fourcc, 29.97, (640, 360))
 
 # Load some sample pictures and learn how to recognize them.
-lmm_image = face_recognition.load_image_file("lin-manuel-miranda.png")
-lmm_face_encoding = face_recognition.face_encodings(lmm_image)[0]
+k_image = face_recognition.load_image_file("katie.JPG")
+k_face_encoding = face_recognition.face_encodings(k_image)[0]
 
-al_image = face_recognition.load_image_file("alex-lacamoire.png")
-al_face_encoding = face_recognition.face_encodings(al_image)[0]
+r_image = face_recognition.load_image_file("rose.JPG")
+r_face_encoding = face_recognition.face_encodings(r_image)[0]
 
 known_faces = [
-    lmm_face_encoding,
-    al_face_encoding
+    r_face_encoding,
+    k_face_encoding
 ]
 
 # Initialize some variables
@@ -42,8 +42,12 @@ while True:
     if not ret:
         break
 
+        # Only process every 20th frame
+    if frame_number % 20 != 0:
+        continue
+
     # Convert the image from BGR color (which OpenCV uses) to RGB color (which face_recognition uses)
-    rgb_frame = frame[:, :, ::-1]
+    rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
     # Find all the faces and face encodings in the current frame of video
     face_locations = face_recognition.face_locations(rgb_frame)
@@ -52,15 +56,16 @@ while True:
     face_names = []
     for face_encoding in face_encodings:
         # See if the face is a match for the known face(s)
-        match = face_recognition.compare_faces(known_faces, face_encoding, tolerance=0.50)
+        match = face_recognition.compare_faces(
+            known_faces, face_encoding, tolerance=0.50)
 
         # If you had more than 2 faces, you could make this logic a lot prettier
         # but I kept it simple for the demo
         name = None
         if match[0]:
-            name = "Lin-Manuel Miranda"
+            name = "Rose"
         elif match[1]:
-            name = "Alex Lacamoire"
+            name = "Katie"
 
         face_names.append(name)
 
@@ -73,9 +78,18 @@ while True:
         cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
 
         # Draw a label with a name below the face
-        cv2.rectangle(frame, (left, bottom - 25), (right, bottom), (0, 0, 255), cv2.FILLED)
+        cv2.rectangle(frame, (left, bottom - 25),
+                      (right, bottom), (0, 0, 255), cv2.FILLED)
         font = cv2.FONT_HERSHEY_DUPLEX
-        cv2.putText(frame, name, (left + 6, bottom - 6), font, 0.5, (255, 255, 255), 1)
+        cv2.putText(frame, name, (left + 6, bottom - 6),
+                    font, 0.5, (255, 255, 255), 1)
+
+    # Display the resulting image
+    cv2.imshow('Video', frame)
+
+    # Hit 'q' on the keyboard to quit!
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
 
     # Write the resulting image to the output video file
     print("Writing frame {} / {}".format(frame_number, length))
@@ -83,4 +97,5 @@ while True:
 
 # All done!
 input_movie.release()
+output_movie.release()
 cv2.destroyAllWindows()
