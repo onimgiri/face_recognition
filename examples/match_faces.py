@@ -1,6 +1,31 @@
 import os
 import face_recognition
 
+import base64
+import json
+
+
+def images_to_json(folder_path):
+    image_files = [f for f in os.listdir(
+        folder_path) if f.endswith(('.jpg', '.png'))]
+    image_list = []
+
+    for image_file in image_files:
+        with open(os.path.join(folder_path, image_file), 'rb') as file:
+            base64_image = base64.b64encode(file.read()).decode('utf-8')
+            image_info = {"filename": image_file, "base_64": base64_image}
+            image_list.append(image_info)
+
+    data = {
+        "latlong": "27.940905547807144,-82.44956016650488",
+        "total_faces": len(image_files),
+        "estimated_crossing": 5,  # Update this as needed
+        "faces_info": image_list,
+    }
+
+    with open('NEO_file.json', 'w') as outfile:
+        json.dump(data, outfile, indent=4)
+
 
 def find_matching_faces(input_image_path, face_folder_path):
     # Load the input image
@@ -41,3 +66,6 @@ def find_matching_faces(input_image_path, face_folder_path):
 
 # Call the function with an input image and a face folder
 find_matching_faces("test_stock.JPG", "output_faces")
+
+# Call the function and print the output
+print(images_to_json('output_faces'))

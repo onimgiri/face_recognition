@@ -14,6 +14,25 @@ length = int(input_video.get(cv2.CAP_PROP_FRAME_COUNT))
 frame_number = 0
 face_encodings_in_video = []
 
+
+def images_to_json(folder_path):
+    image_files = [f for f in os.listdir(
+        folder_path) if f.endswith(('.jpg', '.png'))]
+    image_list = []
+
+    for image_file in image_files:
+        with open(os.path.join(folder_path, image_file), 'rb') as file:
+            base64_image = base64.b64encode(file.read()).decode('utf-8')
+            image_info = {"filename": image_file, "base_64": base64_image}
+            image_list.append(image_info)
+
+    return json.dumps(image_list, indent=4)
+
+
+# Call the function and print the output
+print(images_to_json('path_to_your_image_folder'))
+
+
 while True:
     # Grab a single frame of video
     ret, frame = input_video.read()
