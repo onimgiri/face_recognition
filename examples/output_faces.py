@@ -9,7 +9,7 @@ if not os.path.exists('output_faces'):
     os.makedirs('output_faces')
 
 # Load the video file
-input_video = cv2.VideoCapture("StockFootage.mp4")
+input_video = cv2.VideoCapture("PXL_20230514_180104813.TS.mp4")
 length = int(input_video.get(cv2.CAP_PROP_FRAME_COUNT))
 frame_number = 0
 face_encodings_in_video = []
@@ -27,10 +27,6 @@ def images_to_json(folder_path):
             image_list.append(image_info)
 
     return json.dumps(image_list, indent=4)
-
-
-# Call the function and print the output
-print(images_to_json('path_to_your_image_folder'))
 
 
 while True:

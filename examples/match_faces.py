@@ -7,7 +7,7 @@ import json
 
 def images_to_json(folder_path):
     image_files = [f for f in os.listdir(
-        folder_path) if f.endswith(('.jpg', '.png'))]
+        folder_path) if f.endswith(('.jpg', '.png', ".JPG"))]
     image_list = []
 
     for image_file in image_files:
@@ -17,7 +17,7 @@ def images_to_json(folder_path):
             image_list.append(image_info)
 
     data = {
-        "latlong": "27.940905547807144,-82.44956016650488",
+        "latlong": "27.939743871352466, -82.45443125436583",
         "total_faces": len(image_files),
         "estimated_crossing": 5,  # Update this as needed
         "faces_info": image_list,
